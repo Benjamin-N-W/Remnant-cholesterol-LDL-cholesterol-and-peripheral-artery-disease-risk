@@ -1047,8 +1047,7 @@ toffice(figure = Figure_1, format = "pptx",title= "Copenhagen General Population
 fig3<-list()
 for (k in c("PAD","CLTI","AMI"))
   for (i in c("apob_mgdl","remncholcalc","ldl","VLDLP","LDLP")){
-    model<-cph(as.formula(paste0("Surv(startage,stopage",k,",",k,")~rcs(",i,",3)+strat(sex)+systolic+diastolic+strat(status_smoking)+rcs(cum_smoking, 3)+birthdate",
-                                 if (i=="VLDLP" | i=="LDLP") {"+strat(P1methyl2pyrrolidone)"} else {""})) ,data=cgps,x=TRUE, y=TRUE)  
+    model<-cph(as.formula(paste0("Surv(startage,stopage",k,",",k,")~rcs(",i,",3)+strat(sex)+systolic+diastolic+strat(status_smoking)+rcs(cum_smoking, 3)+birthdate")) ,data=cgps,x=TRUE, y=TRUE)  
     pred<-Predict(model,name=i, ref.zero = TRUE, fun=exp)
     
     pred[c("yhat","lower","upper")]<-exp(log(pred[c("yhat","lower","upper")])/get(paste0("lambda.",i)))
@@ -1104,8 +1103,7 @@ for (k in c("PAD","CLTI","AMI"))
     for (g in c("","+hdl")){
     model<-cph(as.formula(paste0("Surv(startage,stopage",k,",",k,")~",i,"+",
                                  if(i=="remncholcalc") {"ldl"} else if(i=="ldl") {"remncholcalc"} else if(i=="VLDLP") {"LDLP"} else if(i=="LDLP") {"VLDLP"} ,
-                                 "+strat(sex)+systolic+diastolic+strat(status_smoking)+rcs(cum_smoking, 3)+birthdate",g,
-                                 if (i=="VLDLP" | i=="LDLP") {"+strat(P1methyl2pyrrolidone)"} else {""})) ,data=cgps,x=TRUE, y=TRUE)  
+                                 "+strat(sex)+systolic+diastolic+strat(status_smoking)+rcs(cum_smoking, 3)+birthdate",g)) ,data=cgps,x=TRUE, y=TRUE)  
     
     
     pred<- if (i=="remncholcalc") {
@@ -1212,7 +1210,7 @@ for (k in c("PAD","CLTI","AMI"))
                                   else {sex!="hej"}), if (i=="hscrp_log"){hscrp>0} else {sex!="hej"}),
                model="rb", estimation = "paramfunc", inference = "delta", outcome=paste0("followup",k), event=k, 
                exposure = "apob_cut2", mediator=c(i), EMint=F, 
-               basec= if (i=="VLDLP_log"| i=="LDLP"){c("startage","sex", "status_smoking", "cum_smoking", "birthdate", "systolic","diastolic","P1methyl2pyrrolidone")} else {
+               basec= if (i=="VLDLP_log"| i=="LDLP"){c("startage","sex", "status_smoking", "cum_smoking", "birthdate", "systolic","diastolic")} else {
                  c("startage","sex", "status_smoking", "cum_smoking", "birthdate", "systolic","diastolic")},
                yreg="coxph", mreg=list("linear"),mval=list(1) , yval=TRUE, nboot=1, multimp = F)
     
@@ -1349,8 +1347,7 @@ for (k in c("PAD","CLTI","AMI"))
     for (g in c("","+hdl")){
       model<-cph(as.formula(paste0("Surv(startage,stopage",k,",",k,")~",i,"+",
                                    if(i=="remncholcalc") {"ldl"} else if(i=="ldl") {"remncholcalc"} else if(i=="VLDLP") {"LDLP"} else if(i=="LDLP") {"VLDLP"} ,
-                                   "+strat(sex)+systolic+diastolic+strat(status_smoking)+rcs(cum_smoking, 3)+birthdate",g,
-                                   if (i=="VLDLP" | i=="LDLP") {"+strat(P1methyl2pyrrolidone)"} else {""})) ,data=cgps,x=TRUE, y=TRUE)  
+                                   "+strat(sex)+systolic+diastolic+strat(status_smoking)+rcs(cum_smoking, 3)+birthdate",g)) ,data=cgps,x=TRUE, y=TRUE)  
     
     
     pred<- if (i=="remncholcalc") {
@@ -1442,7 +1439,7 @@ for (k in c("PAD","CLTI","AMI"))
     
     for (q in c("model1","model2","model3")) {
       
-      adjust<-paste0("+strat(sex)++birthdate+strat(P1methyl2pyrrolidone)",
+      adjust<-paste0("+strat(sex)+birthdate",
                      if (q=="model2" |q=="model3"){"+systolic+diastolic+strat(status_smoking)+rcs(cum_smoking, 3)"} else {""},
                      if (q=="model3"){"+bmi+ascvd_pre+dmall_pre"} else {""})
       
@@ -1566,7 +1563,7 @@ dat<-cgps[c("apob_mgdl","remncholcalc","ldl","VLDLP","LDLP","sex","birthdate","o
       
       adjust<-paste0("+", if(i=="remncholcalc") {"ldl"} else if(i=="ldl") {"remncholcalc"} else if(i=="VLDLP") {"LDLP"} else if(i=="LDLP") {"VLDLP"},
                      "+strat(sex)+birthdate+systolic+diastolic+strat(status_smoking)+rcs(cum_smoking, 3)",
-                     if (q=="model2"){"+bmi+dmall_pre+ascvd_pre"} else {""}, if (i=="VLDLP" | i=="LDLP") {"+strat(P1methyl2pyrrolidone)"} else {""},
+                     if (q=="model2"){"+bmi+dmall_pre+ascvd_pre"} else {""},
                      if (q=="model6") {"+rcs(startage,3)"} else {})
       
       
@@ -1670,8 +1667,7 @@ for (k in c("PAD","AMI"))
       
       adjust<-paste0("+", if(i=="remncholcalc") {"ldl"} else if(i=="ldl") {"remncholcalc"} else if(i=="VLDLP" ) {"LDLP"} else if(i=="LDLP") {"VLDLP"},
                      "+strat(sex)+birthdate+systolic+diastolic+strat(status_smoking)+rcs(cum_smoking, 3)",
-                     if (q=="model2"){"+bmi"} else if (q=="model3") {"+dmall_pre"} else if (q=="model4") {"+ascvd_pre"} else {""}, 
-                     if (i=="VLDLP" | i=="LDLP") {"+strat(P1methyl2pyrrolidone)"} else {""})
+                     if (q=="model2"){"+bmi"} else if (q=="model3") {"+dmall_pre"} else if (q=="model4") {"+ascvd_pre"} else {""})
       
       
       model<-cph(as.formula(paste0("Surv(startage,stopage",k,",",k,")~",i,adjust)) ,data=dat,x=TRUE, y=TRUE)  
@@ -1764,8 +1760,7 @@ for (k in c("PAD","AMI"))
       
       adjust<-paste0("+", if(i=="remncholcalc"& q!="model4") {"ldl"} else if(i=="ldl"& q!="model4") {"remncholcalc"} else if(i=="VLDLP" & q!="model4") {"LDLP"} else if(i=="LDLP"& q!="model4") {"VLDLP"},
                      "+strat(sex)+birthdate+systolic+diastolic+strat(status_smoking)+rcs(cum_smoking, 3)",
-                     if (q=="model2"){"+log(trig)"} else if (q=="model3") {"+hdl"} else {""}, 
-                     if (i=="VLDLP" | i=="LDLP") {"+strat(P1methyl2pyrrolidone)"} else {""})
+                     if (q=="model2"){"+log(trig)"} else if (q=="model3") {"+hdl"} else {""})
       
       
         model<-cph(as.formula(paste0("Surv(startage,stopage",k,",",k,")~",i,adjust)) ,data=dat,x=TRUE, y=TRUE)  
@@ -1861,8 +1856,7 @@ for (k in c("PAD","AMI"))
     
      model<-cph(as.formula(paste0("Surv(startage,stopage",k,",",k,")~",i,"+",
                                  if(i=="remncholcalc") {"ldl"} else if(i=="ldl") {"remncholcalc"} else if(i=="VLDLP") {"LDLP"} else if(i=="LDLP") {"VLDLP"} ,
-                                 "+strat(sex)+systolic+diastolic+strat(status_smoking)+rcs(cum_smoking, 3)+birthdate",
-                                 if (i=="VLDLP" | i=="LDLP") {"+strat(P1methyl2pyrrolidone)"} else {""})) ,data=dat,x=TRUE, y=TRUE)  
+                                 "+strat(sex)+systolic+diastolic+strat(status_smoking)+rcs(cum_smoking, 3)+birthdate")) ,data=dat,x=TRUE, y=TRUE)  
     
     
     pred<- if (i=="remncholcalc") {
@@ -1948,8 +1942,7 @@ for (q in c(0:6))
       
       model<-cph(as.formula(paste0("Surv(startage,stopage",k,",",k,")~",i,"+",
                                    if(i=="remncholcalc") {"ldl"} else if(i=="ldl") {"remncholcalc"} else if(i=="VLDLP") {"LDLP"} else if(i=="LDLP") {"VLDLP"} ,
-                                   "+strat(sex)+systolic+diastolic+strat(status_smoking)+rcs(cum_smoking, 3)+birthdate",
-                                   if (i=="VLDLP" | i=="LDLP") {"+strat(P1methyl2pyrrolidone)"} else {""})) ,data=dat,x=TRUE, y=TRUE)  
+                                   "+strat(sex)+systolic+diastolic+strat(status_smoking)+rcs(cum_smoking, 3)+birthdate")) ,data=dat,x=TRUE, y=TRUE)  
       
       
       pred<- if (i=="remncholcalc") {
@@ -2041,8 +2034,7 @@ for (i in c( "apob_mgdl","remncholcalc","ldl","VLDLP","LDLP")){
   
   model<-cph(as.formula(paste0("Surv(startage,stopage",k,",",k,")~",i,"+",
                                if(i=="remncholcalc") {"ldl"} else if(i=="ldl") {"remncholcalc"} else if(i=="VLDLP") {"LDLP"} else if(i=="LDLP") {"VLDLP"} ,
-                               "+strat(sex)+systolic+diastolic+strat(status_smoking)+rcs(cum_smoking, 3)+birthdate",
-                               if (i=="VLDLP" | i=="LDLP") {"+strat(P1methyl2pyrrolidone)"} else {""})) ,data=dat,x=TRUE, y=TRUE)  
+                               "+strat(sex)+systolic+diastolic+strat(status_smoking)+rcs(cum_smoking, 3)+birthdate")) ,data=dat,x=TRUE, y=TRUE)  
   
   
   pred<- if (i=="remncholcalc") {
@@ -2131,8 +2123,7 @@ for (k in c("PAD","AMI"))
     
     model<-cph(as.formula(paste0("Surv(startage,stopage",k,",",k,")~",i,"+",
                                  if(i=="remncholcalc") {"ldl"} else if(i=="ldl") {"remncholcalc"} else if(i=="VLDLP") {"LDLP"} else if(i=="LDLP") {"VLDLP"} ,
-                                 "+strat(sex)+systolic+diastolic+strat(status_smoking)+rcs(cum_smoking, 3)+birthdate",
-                                 if (i=="VLDLP" | i=="LDLP") {"+strat(P1methyl2pyrrolidone)"} else {""})) ,data=dat,x=TRUE, y=TRUE)  
+                                 "+strat(sex)+systolic+diastolic+strat(status_smoking)+rcs(cum_smoking, 3)+birthdate")) ,data=dat,x=TRUE, y=TRUE)  
     
     
     pred<- if (i=="remncholcalc") {
@@ -2215,8 +2206,7 @@ for (k in c("PAD","AMI"))
     
     model<-cph(as.formula(paste0("Surv(startage,stopage",k,",",k,")~",i,"+",
                                  if(i=="remncholcalc") {"ldl"} else if(i=="ldl") {"remncholcalc"} else if(i=="VLDLP") {"LDLP"} else if(i=="LDLP") {"VLDLP"} ,
-                                 "+systolic+diastolic+strat(status_smoking)+rcs(cum_smoking, 3)+birthdate",
-                                 if (i=="VLDLP" | i=="LDLP") {"+strat(P1methyl2pyrrolidone)"} else {""})) ,data=dat,x=TRUE, y=TRUE)  
+                                 "+systolic+diastolic+strat(status_smoking)+rcs(cum_smoking, 3)+birthdate")) ,data=dat,x=TRUE, y=TRUE)  
     
     
     pred<- if (i=="remncholcalc") {
@@ -2297,8 +2287,7 @@ for (k in c("PAD","AMI"))
     
     model<-cph(as.formula(paste0("Surv(startage,stopage",k,",",k,")~",i,"*sex+",
                                  if(i=="remncholcalc") {"ldl"} else if(i=="ldl") {"remncholcalc"} else if(i=="VLDLP") {"LDLP"} else if(i=="LDLP") {"VLDLP"} ,
-                                 "+systolic+diastolic+strat(status_smoking)+rcs(cum_smoking, 3)+birthdate",
-                                 if (i=="VLDLP" | i=="LDLP") {"+strat(P1methyl2pyrrolidone)"} else {""})) ,data=dat,x=TRUE, y=TRUE)  
+                                 "+systolic+diastolic+strat(status_smoking)+rcs(cum_smoking, 3)+birthdate")) ,data=dat,x=TRUE, y=TRUE)  
     
     
 s<-length(model$coefficients)
@@ -2342,8 +2331,8 @@ for (q in c("DI702","DI702A","DI739","DI739A","DI739C","K"))
       
       model<-cph(as.formula(paste0("Surv(startage,stopage",k,",",k,")~",i,"+",
                                    if(i=="remncholcalc") {"ldl"} else if(i=="ldl") {"remncholcalc"} else if(i=="VLDLP") {"LDLP"} else if(i=="LDLP") {"VLDLP"} ,
-                                   "+strat(sex)+systolic+diastolic+strat(status_smoking)+rcs(cum_smoking, 3)+birthdate",
-                                   if (i=="VLDLP" | i=="LDLP") {"+strat(P1methyl2pyrrolidone)"} else {""})) ,data=dat,x=TRUE, y=TRUE)  
+                                   "+strat(sex)+systolic+diastolic+strat(status_smoking)+rcs(cum_smoking, 3)+birthdate"
+                                   )) ,data=dat,x=TRUE, y=TRUE)  
       
       
       pred<- if (i=="remncholcalc") {
@@ -2439,7 +2428,7 @@ for (k in c("PAD","CLTI","AMI"))
                                   else {sex!="hej"}), if (i=="hscrp_log"){hscrp>0} else {sex!="hej"}),
                model="rb", estimation = "paramfunc", inference = "delta", outcome=paste0("followup",k), event=k, 
                exposure = "apob_cut2", mediator=c(i), EMint=F, 
-               basec= if (i=="VLDLP_log"| i=="LDLP"){c("startage","sex", "status_smoking", "cum_smoking", "birthdate", "systolic","diastolic","P1methyl2pyrrolidone")} else {
+               basec= if (i=="VLDLP_log"| i=="LDLP"){c("startage","sex", "status_smoking", "cum_smoking", "birthdate", "systolic","diastolic")} else {
                  c("startage","sex", "status_smoking", "cum_smoking", "birthdate", "systolic","diastolic")},
                yreg="coxph", mreg=list("linear"),mval=list(1) , yval=TRUE, nboot=1, multimp = F)
     
@@ -2500,7 +2489,7 @@ for (k in c("PAD","CLTI","AMI"))
                                   else {sex!="hej"}), if (i=="hscrp_log"){hscrp>0} else {sex!="hej"}),
                model="rb", estimation = "paramfunc", inference = "delta", outcome=paste0("followup",k), event=k, 
                exposure = "apob_cut2", mediator=c(i), EMint=F, 
-               basec= if (i=="VLDLP_log"| i=="LDLP"){c("startage","sex", "status_smoking", "cum_smoking", "birthdate", "systolic","diastolic","P1methyl2pyrrolidone")} else {
+               basec= if (i=="VLDLP_log"| i=="LDLP"){c("startage","sex", "status_smoking", "cum_smoking", "birthdate", "systolic","diastolic")} else {
                  c("startage","sex", "status_smoking", "cum_smoking", "birthdate", "systolic","diastolic")},
                yreg="coxph", mreg=list("linear"),mval=list(1) , yval=TRUE, nboot=1, multimp = F)
     
